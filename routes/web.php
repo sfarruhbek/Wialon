@@ -56,4 +56,4 @@ Route::get('api/wait', [ApiController::class, 'wait'])->name('api.wait');
 Route::get('/bus-location', [ApiController::class, 'getBusLocation'])->name('busLocation');
 Route::get('/all-buses', [ApiController::class, 'getAllBusesLocation'])->name('all-buses');
 
-
+Route::get('/wait', function (){ return view('wait');})->name('wait');
