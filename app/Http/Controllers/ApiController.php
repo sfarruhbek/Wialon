@@ -65,7 +65,16 @@ class ApiController extends Controller
     public function wait(Request $request)
     {
         $busStopId = $request->query('id');
+
+        if($busStopId === null){
+            return response()->json(['error' => 'Your id not found in data'], 400);
+        }
+
         $busStop = BusStop::with('roads.buses')->with('roads.busStops')->find($busStopId);
+
+        if($busStop === null){
+            return response()->json(['error' => 'Your id not found in data'], 400);
+        }
 
 
         $cBusStop = [
