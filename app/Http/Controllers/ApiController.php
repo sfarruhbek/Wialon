@@ -204,6 +204,9 @@ class ApiController extends Controller
 
         RouteService::loop();
 
-        return response()->json($result);
+        return response()->json([
+            'result' => $result,
+            'now' => Carbon::now(),
+        ]);
     }
 }
