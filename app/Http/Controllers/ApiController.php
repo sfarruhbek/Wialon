@@ -206,7 +206,7 @@ class ApiController extends Controller
 
         return response()->json([
             'result' => $result,
-            'now' => Carbon::now(),
+            'now' => Carbon::now()->format('d-m-Y H:i:s'),
         ]);
     }
 }
