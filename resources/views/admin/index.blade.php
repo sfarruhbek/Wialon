@@ -177,6 +177,7 @@
         fetch(`{{route("all-buses")}}`)
             .then(response => response.json())
             .then(data => {
+                data = data.result;
                 if (!data || data.length === 0) {
                     console.log("Hech qanday mashina topilmadi!");
                     return;
