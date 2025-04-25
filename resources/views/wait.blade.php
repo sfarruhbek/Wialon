@@ -33,8 +33,7 @@
             let tableBody = document.getElementById("busData");
             tableBody.innerHTML = "";
 
-            jsonData.forEach(data => {
-                console.log(data);
+            jsonData.result.forEach(data => {
                 let row = `<tr>
                         <td>${data.route}</td>
                         <td>${data.bus}</td>

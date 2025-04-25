@@ -177,7 +177,6 @@
         fetch(`{{route("all-buses")}}`)
             .then(response => response.json())
             .then(data => {
-                data = data.result;
                 if (!data || data.length === 0) {
                     console.log("Hech qanday mashina topilmadi!");
                     return;
@@ -223,7 +222,6 @@
                     map.geoObjects.add(placemark);
                     busMarkers[busId] = placemark;
                 });
-
             })
             .catch(error => {
                 console.log("Ma'lumotlarni olishda xatolik!", error);
