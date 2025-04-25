@@ -86,8 +86,6 @@ class ApiController extends Controller
 
         $result = [];
 
-        $status = true;
-
 
 
         foreach ($busStop->roads as $road) {
@@ -138,6 +136,7 @@ class ApiController extends Controller
                         $dc2 = RouteService::getDistanceBetweenPoints($newRoadPoint, ['latitude'=>$last2->latitude, "longitude" => $last2->longitude], $cBusStop);
 
 
+
 //                        $newRoadPoint2 = RouteService::getRoadUntilBusStop($nd2, $roadPoints[0]);
 //                        $md = 0;
 //                        if ($dc1<0 || $dc2<0) {
@@ -149,7 +148,8 @@ class ApiController extends Controller
 //                            }
 //                        }
 
-                        if ($dc1 > $dc2) {
+
+                        if ($dc1 > $dc2 || $dc2 < 0 || $dc1 < 0) {
                             continue;
                         }
 
@@ -165,6 +165,8 @@ class ApiController extends Controller
                             'latitude' => $wBus['latitude'],
                             'longitude' => $wBus['longitude'],
                             'distance' => $dc,
+                            'distance1' => $dc1,
+                            'distance2' => $dc2,
                         ];
                         break;
                     }
@@ -180,6 +182,9 @@ class ApiController extends Controller
             }
             $obj = $data[0];
             foreach ($data as $item) {
+                if($item['distance1'] < 0 || $item['distance2'] < 0){
+                    continue;
+                }
                 if ($item['distance'] > 0 && $item['distance'] < $obj['distance']) {
                     $obj = $item;
                 }

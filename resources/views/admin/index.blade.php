@@ -99,15 +99,15 @@
                         map.geoObjects.add(polyline);
 
                         //Har bir nuqtaga Yandex Map ikonasini qo'shish va Road Point ID ko'rsatish
-                        road.points.forEach(point => {
-                            let placemark = new ymaps.Placemark([point.latitude, point.longitude], {
-                                balloonContent: `<strong>Road Point id:</strong> ${point.id}<br>status: ${point.status}` // Road Point ID ni ko'rsatish
-                            }, {
-                                preset: "islands#blueCircleIcon"
-                            });
-
-                            map.geoObjects.add(placemark);
-                        });
+                        // road.points.forEach(point => {
+                        //     let placemark = new ymaps.Placemark([point.latitude, point.longitude], {
+                        //         balloonContent: `<strong>Road Point id:</strong> ${point.id}<br>status: ${point.status}` // Road Point ID ni ko'rsatish
+                        //     }, {
+                        //         preset: "islands#blueCircleIcon"
+                        //     });
+                        //
+                        //     map.geoObjects.add(placemark);
+                        // });
 
                         // Boshlanish va tugash nuqtalariga alohida belgilar qo'shish
                         map.geoObjects.add(new ymaps.Placemark([road.points[0].latitude, road.points[0].longitude], {
@@ -222,6 +222,7 @@
                     map.geoObjects.add(placemark);
                     busMarkers[busId] = placemark;
                 });
+
             })
             .catch(error => {
                 console.log("Ma'lumotlarni olishda xatolik!", error);

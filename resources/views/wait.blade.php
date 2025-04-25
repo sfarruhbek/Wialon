@@ -34,6 +34,7 @@
             tableBody.innerHTML = "";
 
             jsonData.forEach(data => {
+                console.log(data);
                 let row = `<tr>
                         <td>${data.route}</td>
                         <td>${data.bus}</td>
