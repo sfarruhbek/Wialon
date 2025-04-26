@@ -18,6 +18,5 @@ Schedule::call(function () {
         if(!RouteService::loop()){
             Log::info("Route Service is not running");
         }
-        sleep(15);
     }
 });
