@@ -116,7 +116,7 @@ class ApiController extends Controller
                         }
                         $roadPoints = $nd;
 
-                        if(!($bus->status == $status || ($bus->status == 2 && $status == 0))){
+                        if(!(($bus->status == 1 && $status == 1) || ($bus->status == 2 && $status == 0))){
                             continue;
                         }
 
