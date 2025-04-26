@@ -62,6 +62,7 @@ class ApiController extends Controller
 
     public function wait(Request $request)
     {
+        RouteService::loop();
         $busStopId = $request->query('id');
 
         if($busStopId === null){
