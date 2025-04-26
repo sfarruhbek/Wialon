@@ -122,18 +122,24 @@ class ApiController extends Controller
                         $newRoadPoint = RouteService::getRoadUntilBusStop($roadPoints, $cBusStop);
 
 
-                        $history = BusPointsHistory::where('bus_id', $bus->id)->orderBy('id', 'desc')->take(2)->get();
+                        $history = BusPointsHistory::where('bus_id', $bus->id)->orderBy('id', 'desc')->get();
 
                         if($history->count() < 2){
                             continue;
                         }
+                        $st = false;
 
-                        $last1 = $history[0];
-                        $last2 = $history[1];
+                        foreach ($history as $history) {
+                            $dcT = RouteService::getDistanceBetweenPoints($newRoadPoint, ['latitude'=>$history->latitude, "longitude" => $history->longitude], $cBusStop);
+                            if($dcT < 0){
+                                $st = true;
+                                break;
+                            }
+                        }
 
-
-                        $dc1 = RouteService::getDistanceBetweenPoints($newRoadPoint, ['latitude'=>$last1->latitude, "longitude" => $last1->longitude], $cBusStop);
-                        $dc2 = RouteService::getDistanceBetweenPoints($newRoadPoint, ['latitude'=>$last2->latitude, "longitude" => $last2->longitude], $cBusStop);
+                        if ($st){
+                            continue;
+                        }
 
 
 
@@ -148,11 +154,6 @@ class ApiController extends Controller
 //                            }
 //                        }
 
-
-                        if ($dc1 > $dc2 || $dc2 < 0 || $dc1 < 0) {
-                            continue;
-                        }
-
                         $dc = RouteService::getDistanceBetweenPoints($newRoadPoint, $wBus, $cBusStop);
 
                         if ($dc < 0) {
@@ -165,8 +166,6 @@ class ApiController extends Controller
                             'latitude' => $wBus['latitude'],
                             'longitude' => $wBus['longitude'],
                             'distance' => $dc,
-                            'distance1' => $dc1,
-                            'distance2' => $dc2,
                         ];
                         break;
                     }

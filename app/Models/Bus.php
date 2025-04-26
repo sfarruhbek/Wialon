@@ -9,6 +9,7 @@ class Bus extends Model
     protected $fillable = [
         'bus_wialon_id',
         'bus_number',
+        'status',
     ];
 
     public function road()

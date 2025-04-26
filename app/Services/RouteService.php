@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Bus;
 use App\Models\BusPointsHistory;
+use App\Models\Road;
 use Carbon\Carbon;
 use Faker\Core\Number;
 use Illuminate\Support\Facades\Log;
@@ -111,9 +112,39 @@ class RouteService
 
     public static function loop()
     {
+        $roads = Road::with('points', 'busStops', 'buses')->get();
 
-        BusPointsHistory::where('created_at', '<', Carbon::now()->subMinutes(10))->delete();
+        foreach ($roads as $road) {
+            $points = $road->points;
+            $buses = $road->buses;
 
+            $forward = [];
+            $backward = [];
+            foreach ($points as $point) {
+                if($point->status == 1){
+                    $forward[] = $point;
+                } else if($point->status == 0){
+                    $backward[] = $point;
+                }
+            }
+
+            $allBuses = WialonService::getAllBusesLocation();
+
+            foreach ($buses as $bus) {
+                foreach ($allBuses as $bus_location) {
+                    if($bus_location['busId'] == $bus->bus_wialon_id){
+                        $wBus = $bus_location;
+                        break;
+                    }
+                }
+                if(self::getDistance([$forward[0]->latitude, $forward[0]->longitude], [$wBus['latitude'], $wBus['longitude']])<100){
+                    $bus->update(['status' => 1]);
+                }
+                if(self::getDistance([$backward[0]->latitude, $backward[0]->longitude], [$wBus['latitude'], $wBus['longitude']])<100){
+                    $bus->update(['status' => 2]);
+                }
+            }
+        }
 
         $buses = Bus::with('road')->with('road.busStops')->with('road.points')->get();
 
@@ -145,6 +176,9 @@ class RouteService
                                 'latitude' => $wBus['latitude'],
                                 'longitude' => $wBus['longitude'],
                             ]);
+
+                            //
+
                         }
 
                     }

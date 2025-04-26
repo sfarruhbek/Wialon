@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('bus_wialon_id')->unique();
             $table->string('bus_number')->unique();
+            $table->integer('status')->nullable()->default(0);
             $table->timestamps();
         });
     }
