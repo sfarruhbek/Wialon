@@ -20,8 +20,6 @@ class ApiController extends Controller
         return response()->json();
     }
 
-    private $wialonToken = "a48df18e04335d64cb11bbb98e0d26267FDCD4A5F48768E45BE07DD5FCF0D2FBB1DF3F9F"; // Wialon API token
-
     public function getBusLocation(Request $request)
     {
         $busId = $request->query('busId');
@@ -118,28 +116,12 @@ class ApiController extends Controller
                         }
                         $roadPoints = $nd;
 
+                        if(!($bus->status == $status || ($bus->status == 2 && $status == 0))){
+                            continue;
+                        }
+
 
                         $newRoadPoint = RouteService::getRoadUntilBusStop($roadPoints, $cBusStop);
-
-
-                        $history = BusPointsHistory::where('bus_id', $bus->id)->orderBy('id', 'desc')->get();
-
-                        if($history->count() < 2){
-                            continue;
-                        }
-                        $st = false;
-
-                        foreach ($history as $history) {
-                            $dcT = RouteService::getDistanceBetweenPoints($newRoadPoint, ['latitude'=>$history->latitude, "longitude" => $history->longitude], $cBusStop);
-                            if($dcT < 0){
-                                $st = true;
-                                break;
-                            }
-                        }
-
-                        if ($st){
-                            continue;
-                        }
 
 
 
@@ -181,9 +163,6 @@ class ApiController extends Controller
             }
             $obj = $data[0];
             foreach ($data as $item) {
-                if($item['distance1'] < 0 || $item['distance2'] < 0){
-                    continue;
-                }
                 if ($item['distance'] > 0 && $item['distance'] < $obj['distance']) {
                     $obj = $item;
                 }
