@@ -164,9 +164,12 @@ class ApiController extends Controller
             }
             $obj = $data[0];
             foreach ($data as $item) {
-                if ($item['distance'] > 0 && $item['distance'] < $obj['distance']) {
+                if ($item['distance'] > 1 && $item['distance'] < $obj['distance']) {
                     $obj = $item;
                 }
+            }
+            if (!($obj['distance'] > 0)){
+                continue;
             }
 
             $bus = Bus::with('road')->find($obj['id']);
