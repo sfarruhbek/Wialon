@@ -112,11 +112,14 @@ class RouteService
 
     public static function loop()
     {
+        $oneDayAgo = Carbon::now()->subDay();
+        BusPointsHistory::where('created_at', '<', $oneDayAgo)->delete();
+
         $roads = Road::with('points', 'busStops', 'buses')->get();
-        
+
         $wBuses = WialonService::getAllBusesLocation();
-        
-        
+
+
         if (empty($wBuses)) {
             $wBuses = [
                 [
@@ -238,4 +241,3 @@ class RouteService
     }
 
 }
-

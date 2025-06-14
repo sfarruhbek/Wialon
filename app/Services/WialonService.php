@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\WialonSession;
 use Exception;
 
 class WialonService
@@ -15,9 +16,12 @@ class WialonService
     {
         self::$apiUrl = config('app.wialon_api_url', env('WIALON_API_URL'));
         self::$token = config('app.wialon_api_token', env('WIALON_API_TOKEN'));
+
+        $session = WialonSession::latest()->first();
+
+        self::$sessionId = $session ? $session->session_data : null;
     }
 
-    // Bitta avtobus joylashuvini olish
     public static function getBusLocation($busId)
     {
         self::init();
@@ -70,53 +74,26 @@ class WialonService
 
     private static function createSession()
     {
-
-$apiUrl = "https://hst-api.wialon.com/wialon/ajax.html";
-$params = [
-    'svc' => 'token/login',
-    'params' => json_encode([
-        "token" => "a48df18e04335d64cb11bbb98e0d2626D5ECD8E04278326FE54AB91CC3B0EFEAA1FB9195",
-        "operateAs" => "",
-        "appName" => "",
-        "checkService" => ""
-    ])
-];
-
-// cURL so'rovi
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $apiUrl . '?' . http_build_query($params));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-
-if ($response === false) {
-    echo 'Xato yuz berdi: ' . curl_error($ch);
-} else {
-    echo $response;
-}
-
-curl_close($ch);
-        
-        dd($response);
         $loginResponse = Http::get(self::$apiUrl, [
             'svc' => 'token/login',
             'params' => json_encode([
-                    "token" => self::$token,
-                    "operateAs" => "",
-                    "appName" => "",
-                    "checkService" => ""
-                ])
+                "token" => self::$token,
+                "operateAs" => "",
+                "appName" => "",
+                "checkService" => ""
+            ])
         ]);
-        dd($loginResponse);
-    
         if ($loginResponse->successful()) {
             $loginData = $loginResponse->json();
-            
-            dd($loginData, $loginResponse->body());
-            
+
             // Check if 'eid' is set in the response
             if (isset($loginData['eid'])) {
                 self::$sessionId = $loginData['eid'];
+
+                WialonSession::create([
+                    'user_id' => 1, // Foydalanuvchi ID ni qo'shing
+                    'session_data' => self::$sessionId
+                ]);
             } else {
                 // Handle the case where 'eid' is not present
                 self::$sessionId = null;
@@ -136,12 +113,19 @@ curl_close($ch);
         return isset(self::$sessionId);
     }
 
+
     private static function fetchData($service, $params)
     {
         $params['sid'] = self::$sessionId;
         $response = Http::get(self::$apiUrl, array_merge(['svc' => $service], $params));
 
+
         if ($response->successful()) {
+
+            if(!isset($response->json()['items'])){
+                createSession();
+            }
+
             return $response->json();
         }
 
