@@ -12,6 +12,7 @@ use App\Services\RouteService;
 use App\Services\WialonService;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
@@ -19,6 +20,11 @@ class MainController extends Controller
 {
     public function main(){
         return view('main');
+    }
+    public function config()
+    {
+        Artisan::call('optimize');
+        Artisan::call('clear:cache');
     }
 
     public function save_road(Request $request){

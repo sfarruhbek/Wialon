@@ -9,6 +9,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/config', [MainController::class,'config'])->name('config');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
