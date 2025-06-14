@@ -38,6 +38,7 @@ class ApiController extends Controller
         $buses = Bus::with('road')->get();
 
         $data = [];
+        //dd($buses, $wBuses);
         foreach ($buses as $bus) {
 
             if ($bus->road === null){

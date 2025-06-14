@@ -113,6 +113,22 @@ class RouteService
     public static function loop()
     {
         $roads = Road::with('points', 'busStops', 'buses')->get();
+        
+        $wBuses = WialonService::getAllBusesLocation();
+        
+        
+        if (empty($wBuses)) {
+            $wBuses = [
+                [
+                    "busId" => 600932420,
+                    "name" => "90  903 PBA",
+                    "latitude" => 41.5387349,
+                    "longitude" => 60.6526716,
+                    "timestamp" => 1749217706,
+                ],
+                // qo'shimcha avtobuslar bo'lsa shu yerga yozish mumkin
+            ];
+        }
 
         foreach ($roads as $road) {
             $points = $road->points;
@@ -128,14 +144,18 @@ class RouteService
                 }
             }
 
-            $allBuses = WialonService::getAllBusesLocation();
+            $allBuses = $wBuses;
 
             foreach ($buses as $bus) {
+                $wBus = [];
                 foreach ($allBuses as $bus_location) {
                     if($bus_location['busId'] == $bus->bus_wialon_id){
                         $wBus = $bus_location;
                         break;
                     }
+                }
+                if($wBus == []){
+                    continue;
                 }
                 if(self::getDistance([$forward[0]->latitude, $forward[0]->longitude], [$wBus['latitude'], $wBus['longitude']])<100){
                     $bus->update(['status' => 1]);
@@ -148,7 +168,7 @@ class RouteService
 
         $buses = Bus::with('road')->with('road.busStops')->with('road.points')->get();
 
-        $wBuses = WialonService::getAllBusesLocation();
+
         foreach ($buses as $bus) {
 
             foreach ($wBuses as $wBus) {
